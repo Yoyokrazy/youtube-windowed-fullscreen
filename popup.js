@@ -102,7 +102,28 @@ const reportBug = document.getElementById("report-bug");
 if (reportBug) {
   reportBug.addEventListener("click", (e) => {
     e.preventDefault();
-    const body = `**Extension Version:** v${localVersion}\n**Browser:** ${navigator.userAgent}\n\n**Description:**\n\n**Steps to reproduce:**\n1. \n2. \n3. \n`;
+    const ua = navigator.userAgent;
+    let browser = "Unknown";
+    if (ua.includes("Edg/")) {
+      const v = ua.match(/Edg\/([\d.]+)/);
+      browser = "Microsoft Edge " + (v ? v[1] : "");
+    } else if (ua.includes("Chrome/")) {
+      const v = ua.match(/Chrome\/([\d.]+)/);
+      browser = "Google Chrome " + (v ? v[1] : "");
+    } else if (ua.includes("Firefox/")) {
+      const v = ua.match(/Firefox\/([\d.]+)/);
+      browser = "Firefox " + (v ? v[1] : "");
+    } else if (ua.includes("Safari/")) {
+      const v = ua.match(/Version\/([\d.]+)/);
+      browser = "Safari " + (v ? v[1] : "");
+    }
+    let os = "Unknown";
+    if (ua.includes("Windows")) os = "Windows";
+    else if (ua.includes("Mac OS X")) os = "macOS";
+    else if (ua.includes("Linux")) os = "Linux";
+    else if (ua.includes("CrOS")) os = "ChromeOS";
+
+    const body = `**Extension Version:** v${localVersion}\n**Platform:** ${browser} on ${os}\n\n<details>\n<summary>Full user agent</summary>\n\n\`\`\`\n${ua}\n\`\`\`\n</details>\n\n**Description:**\n\n**Steps to reproduce:**\n1. \n2. \n3. \n`;
     const url = `https://github.com/Yoyokrazy/youtube-windowed-fullscreen/issues/new?body=${encodeURIComponent(body)}`;
     chrome.tabs.create({ url });
   });
