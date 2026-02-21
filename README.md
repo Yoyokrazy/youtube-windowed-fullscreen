@@ -8,10 +8,13 @@ When you want to maximize video viewing space while keeping your browser windowe
 
 ## Features
 
-- **Toggle via extension icon** — Click the extension icon in your Chrome toolbar to expand/collapse the player
+- **Toggle via extension icon** — Click the extension icon in your toolbar to expand/collapse the player
+- **In-player toggle buttons** — Hover the upper-left corner of the video to reveal enter/exit icons ([Primer Octicons](https://primer.style/octicons))
 - **Keyboard shortcut** — Press **Alt+Shift+F** to toggle windowed fullscreen anywhere on YouTube
+- **YouTube Live support** — Works on `/watch` and `/live/` pages
 - **Persists across navigation** — Your preference is remembered as you navigate between videos
-- **Dark-themed popup** — Clean, minimal UI that matches YouTube's aesthetic
+- **Update detection** — The popup checks for new GitHub releases and notifies you when an update is available
+- **Dark-themed popup** — Clean, minimal UI with a three-dot menu for quick access to the repo and bug reporting
 
 ## Build & Install
 
@@ -23,11 +26,11 @@ There is no build step — the extension is plain JS and CSS loaded directly by 
 git clone https://github.com/Yoyokrazy/youtube-windowed-fullscreen.git
 ```
 
-Or download and extract the [latest zip from GitHub](https://github.com/Yoyokrazy/youtube-windowed-fullscreen/archive/refs/heads/master.zip).
+Or download and extract the [latest release](https://github.com/Yoyokrazy/youtube-windowed-fullscreen/releases/latest).
 
-### 2. Load into Chrome
+### 2. Load into your browser
 
-1. Open Chrome and navigate to `chrome://extensions`
+1. Navigate to `chrome://extensions` (or `edge://extensions` for Edge)
 2. Enable **Developer mode** (toggle in the top right)
 3. Click **Load unpacked**
 4. Select the `youtube-windowed-fullscreen` folder (the one containing `manifest.json`)
@@ -35,44 +38,51 @@ Or download and extract the [latest zip from GitHub](https://github.com/Yoyokraz
 
 ### Updating
 
-After pulling new changes or editing files locally, bump the version and reload:
+After pulling new changes, bump the patch version and reload:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File build.ps1        # patch bump (1.0.1 -> 1.0.2)
-powershell -ExecutionPolicy Bypass -File build.ps1 minor  # minor bump (1.0.2 -> 1.1.0)
-powershell -ExecutionPolicy Bypass -File build.ps1 major  # major bump (1.1.0 -> 2.0.0)
+powershell -ExecutionPolicy Bypass -File build.ps1
 ```
 
-Then in Chrome:
-1. Go to `chrome://extensions`
+Then in your browser:
+1. Go to `chrome://extensions` (or `edge://extensions`)
 2. Click the **refresh icon** (↻) on the extension card
 3. Reload any open YouTube tabs
 
-The current version is shown at the bottom of the popup.
+> **Note:** Minor and major version bumps are handled exclusively by the GitHub Actions [release workflow](.github/workflows/release.yml). Only use `build.ps1` for local patch bumps.
 
 ## Usage
 
 **Via Extension Icon:**
-- Click the extension icon in your toolbar to toggle windowed fullscreen on/off
+- Click the extension icon in your toolbar to open the popup and toggle windowed fullscreen on/off
+
+**Via In-Player Buttons:**
+- Hover the upper-left corner of the video player to reveal the enter/exit button
 
 **Via Keyboard:**
 - Press **Alt+Shift+F** on any YouTube video page to toggle
 
-The video player will expand to fill the entire browser window. Exit by clicking the icon or pressing Alt+Shift+F again.
-
 ## How It Works
 
 The extension uses a content script that injects CSS to make the YouTube player fill the viewport. When toggled on, it:
-- Hides the page sidebar and header
+- Hides the page sidebar, header, and other non-player UI
 - Makes the player container fill the entire window
 - Maintains video playback controls and functionality
 
-The extension respects your preference across navigation, so you won't need to re-toggle after watching multiple videos.
+The extension respects your preference across YouTube's SPA navigation, so you won't need to re-toggle after watching multiple videos.
+
+## Testing
+
+```bash
+npm test                   # run all tests
+npm run test:unit          # run unit tests only
+npx jest --coverage        # run with coverage reporting
+```
 
 ## Compatibility
 
-- Chrome/Chromium-based browsers
-- Works on youtube.com (music.youtube.com not supported)
+- Chrome, Edge, and other Chromium-based browsers
+- Works on youtube.com watch and live pages (music.youtube.com not supported)
 
 ---
 
