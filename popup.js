@@ -123,7 +123,7 @@ if (reportBug) {
     else if (ua.includes("Linux")) os = "Linux";
     else if (ua.includes("CrOS")) os = "ChromeOS";
 
-    const body = `**Extension Version:** v${localVersion}\n**Platform:** ${browser} on ${os}\n\n<details>\n<summary>Full user agent</summary>\n\n\`\`\`\n${ua}\n\`\`\`\n</details>\n\n**Description:**\n\n**Steps to reproduce:**\n1. \n2. \n3. \n`;
+    const body = `**Description:**\n\n**Steps to reproduce:**\n1. \n2. \n3. \n\n---\n\n**Extension Version:** v${localVersion}\n**Platform:** ${browser} on ${os}\n\n<details>\n<summary>User agent</summary>\n\n\`\`\`\n${ua}\n\`\`\`\n</details>\n`;
     const url = `https://github.com/Yoyokrazy/youtube-windowed-fullscreen/issues/new?body=${encodeURIComponent(body)}`;
     chrome.tabs.create({ url });
   });
