@@ -1,6 +1,7 @@
 # YouTube Windowed Fullscreen
+[![CI](https://github.com/Yoyokrazy/youtube-windowed-fullscreen/actions/workflows/ci.yml/badge.svg)](https://github.com/Yoyokrazy/youtube-windowed-fullscreen/actions/workflows/ci.yml)
 
-A Chrome extension that makes the YouTube video player expand to fill your entire browser window without entering OS-level fullscreen mode.
+A Chrome extensionthat makes the YouTube video player expand to fill your entire browser window without entering OS-level fullscreen mode.
 
 ## Why?
 
