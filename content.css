@@ -116,9 +116,10 @@ html.ywf-active #movie_player {
   background: #000 !important;
 }
 
-/* ===== Fullscreen Exit Button ===== */
+/* ===== Fullscreen Exit Buttons ===== */
 
-#ywf-exit {
+#ywf-exit,
+#ywf-mega-exit {
   display: none;
   position: fixed;
   top: 8px;
@@ -137,11 +138,13 @@ html.ywf-active #movie_player {
   pointer-events: none;
 }
 
-#ywf-exit:hover {
+#ywf-exit:hover,
+#ywf-mega-exit:hover {
   background: rgba(204, 0, 0, 0.9);
 }
 
-#ywf-exit-zone {
+#ywf-exit-zone,
+#ywf-mega-exit-zone {
   display: none;
   position: fixed;
   top: 0;
@@ -151,7 +154,7 @@ html.ywf-active #movie_player {
   z-index: 199999;
 }
 
-/* Show exit button on hover in upper-right */
+/* Windowed fullscreen exit */
 html.ywf-active #ywf-exit,
 html.ywf-active #ywf-exit-zone {
   display: block;
@@ -159,6 +162,26 @@ html.ywf-active #ywf-exit-zone {
 
 html.ywf-active #ywf-exit-zone:hover ~ #ywf-exit,
 html.ywf-active #ywf-exit:hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Mega fullscreen exit (overrides windowed exit) */
+html.ywf-mega #ywf-exit {
+  display: none !important;
+}
+
+html.ywf-mega #ywf-exit-zone {
+  display: none !important;
+}
+
+html.ywf-mega #ywf-mega-exit,
+html.ywf-mega #ywf-mega-exit-zone {
+  display: block;
+}
+
+html.ywf-mega #ywf-mega-exit-zone:hover ~ #ywf-mega-exit,
+html.ywf-mega #ywf-mega-exit:hover {
   opacity: 1;
   pointer-events: auto;
 }

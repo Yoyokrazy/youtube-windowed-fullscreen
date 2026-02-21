@@ -4,6 +4,7 @@
   "use strict";
 
   const CLASS_NAME = "ywf-active";
+  const MEGA_CLASS = "ywf-mega";
   const STORAGE_KEY = "ywf-enabled";
 
   function isWatchPage() {
@@ -12,6 +13,10 @@
 
   function isActive() {
     return document.documentElement.classList.contains(CLASS_NAME);
+  }
+
+  function isMega() {
+    return document.documentElement.classList.contains(MEGA_CLASS);
   }
 
   function createExitElements() {
@@ -27,6 +32,19 @@
       applyState(false);
       chrome.storage.local.set({ [STORAGE_KEY]: false });
     });
+    document.body.appendChild(btn);
+  }
+
+  function createMegaExitElements() {
+    if (document.getElementById("ywf-mega-exit-zone")) return;
+    const zone = document.createElement("div");
+    zone.id = "ywf-mega-exit-zone";
+    document.body.appendChild(zone);
+
+    const btn = document.createElement("button");
+    btn.id = "ywf-mega-exit";
+    btn.textContent = "Exit Fullscreen";
+    btn.addEventListener("click", () => exitMega());
     document.body.appendChild(btn);
   }
 
@@ -53,19 +71,76 @@
     return true;
   }
 
+  function shouldMegaToggleOnKeydown(e) {
+    if (!(e.ctrlKey && e.altKey && e.shiftKey && e.key === "F" && !e.metaKey)) return false;
+    const tag = e.target.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) return false;
+    return true;
+  }
+
+  async function enterMega() {
+    if (!isWatchPage()) return;
+    if (!isActive()) {
+      applyState(true);
+      chrome.storage.local.set({ [STORAGE_KEY]: true });
+    }
+    createExitElements();
+    createMegaExitElements();
+    document.documentElement.classList.add(MEGA_CLASS);
+    try {
+      await document.documentElement.requestFullscreen();
+    } catch {}
+  }
+
+  function exitMega() {
+    document.documentElement.classList.remove(MEGA_CLASS);
+    applyState(false);
+    chrome.storage.local.set({ [STORAGE_KEY]: false });
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    }
+  }
+
+  function toggleMega() {
+    if (isMega()) {
+      exitMega();
+    } else {
+      enterMega();
+    }
+  }
+
+  // Exit mega mode when browser exits fullscreen (e.g. Escape key)
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement && isMega()) {
+      document.documentElement.classList.remove(MEGA_CLASS);
+      applyState(false);
+      chrome.storage.local.set({ [STORAGE_KEY]: false });
+    }
+  });
+
   // Listen for messages from popup
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message.action === "toggle") {
       const state = toggle();
       sendResponse({ active: state });
+    } else if (message.action === "toggleMega") {
+      toggleMega();
+      sendResponse({ mega: isMega() });
     } else if (message.action === "getState") {
-      sendResponse({ active: isActive() });
+      sendResponse({ active: isActive(), mega: isMega() });
     }
     return true;
   });
 
-  // Keyboard shortcut: Alt+Shift+F
+  // Keyboard shortcuts
   document.addEventListener("keydown", (e) => {
+    // Ctrl+Alt+Shift+F for mega (check first since it's a superset)
+    if (shouldMegaToggleOnKeydown(e)) {
+      e.preventDefault();
+      toggleMega();
+      return;
+    }
+    // Alt+Shift+F for windowed fullscreen
     if (shouldToggleOnKeydown(e)) {
       e.preventDefault();
       toggle();
@@ -97,6 +172,6 @@
 
   // Export for testing
   if (typeof module !== "undefined" && module.exports) {
-    module.exports = { CLASS_NAME, STORAGE_KEY, isWatchPage, isActive, applyState, toggle, shouldToggleOnKeydown };
+    module.exports = { CLASS_NAME, MEGA_CLASS, STORAGE_KEY, isWatchPage, isActive, isMega, applyState, toggle, toggleMega, shouldToggleOnKeydown, shouldMegaToggleOnKeydown };
   }
 })();
