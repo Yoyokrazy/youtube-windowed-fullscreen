@@ -47,22 +47,39 @@ async function checkForUpdate() {
   const remoteNewer = remoteVersion && isNewer(remoteVersion, localVersion);
 
   if (localNewer) {
-    // Local files updated, just need to reload
-    updateBanner.innerHTML =
-      `Local update available: v${localFileVersion}<br><button id="reload-btn">Reload Extension</button>`;
-    updateBanner.style.display = "block";
-    document.getElementById("reload-btn").addEventListener("click", () => {
-      chrome.runtime.reload();
-    });
+    // Local files updated, ready to reload — green box
+    showReadyBanner(localFileVersion);
   } else if (remoteNewer && !localNewer) {
-    // Remote is ahead but local files haven't been pulled yet
+    // Remote is ahead but local files haven't been pulled yet — blue box
+    updateBanner.className = "";
     updateBanner.innerHTML =
-      `v${remoteVersion} available — pull latest in your extension directory, then reload<br><button id="reload-btn">Reload Extension</button>`;
+      `v${remoteVersion} available — pull latest in your extension directory, then reload`;
     updateBanner.style.display = "block";
-    document.getElementById("reload-btn").addEventListener("click", () => {
-      chrome.runtime.reload();
-    });
+    // Poll local manifest every 2s to detect when they pull
+    const pollInterval = setInterval(async () => {
+      try {
+        const localUrl = chrome.runtime.getURL("manifest.json");
+        const res = await fetch(localUrl, { cache: "no-store" });
+        if (!res.ok) return;
+        const text = (await res.text()).replace(/^\uFEFF/, "");
+        const polledVersion = JSON.parse(text).version;
+        if (isNewer(polledVersion, localVersion)) {
+          clearInterval(pollInterval);
+          showReadyBanner(polledVersion);
+        }
+      } catch {}
+    }, 2000);
   }
+}
+
+function showReadyBanner(version) {
+  updateBanner.className = "ready";
+  updateBanner.innerHTML =
+    `v${version} detected<br><button id="reload-btn">Reload</button>`;
+  updateBanner.style.display = "block";
+  document.getElementById("reload-btn").addEventListener("click", () => {
+    chrome.runtime.reload();
+  });
 }
 
 checkForUpdate();
