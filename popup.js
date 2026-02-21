@@ -6,6 +6,16 @@ const updateBanner = document.getElementById("update-banner");
 const localVersion = chrome.runtime.getManifest().version;
 document.getElementById("version").textContent = "v" + localVersion;
 
+function isNewer(remote, local) {
+  const r = remote.split(".").map(Number);
+  const l = local.split(".").map(Number);
+  for (let i = 0; i < 3; i++) {
+    if (r[i] > l[i]) return true;
+    if (r[i] < l[i]) return false;
+  }
+  return false;
+}
+
 async function checkForUpdate() {
   try {
     const res = await fetch(
@@ -14,7 +24,7 @@ async function checkForUpdate() {
     );
     if (!res.ok) return;
     const remote = await res.json();
-    if (remote.version !== localVersion) {
+    if (isNewer(remote.version, localVersion)) {
       updateBanner.innerHTML =
         `Update available: v${remote.version}<br><button id="reload-btn">Reload Extension</button>`;
       updateBanner.style.display = "block";
