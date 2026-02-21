@@ -15,8 +15,12 @@ async function checkForUpdate() {
     if (!res.ok) return;
     const remote = await res.json();
     if (remote.version !== localVersion) {
-      updateBanner.textContent = `Update available: v${remote.version}`;
+      updateBanner.innerHTML =
+        `Update available: v${remote.version}<br><button id="reload-btn">Reload Extension</button>`;
       updateBanner.style.display = "block";
+      document.getElementById("reload-btn").addEventListener("click", () => {
+        chrome.runtime.reload();
+      });
     }
   } catch {}
 }
