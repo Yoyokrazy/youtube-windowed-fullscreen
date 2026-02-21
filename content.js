@@ -16,9 +16,12 @@
 
   function createToggleElements() {
     if (document.getElementById("ywf-toggle-zone")) return;
+    const player = document.getElementById("movie_player");
+    if (!player) return;
+
     const zone = document.createElement("div");
     zone.id = "ywf-toggle-zone";
-    document.body.appendChild(zone);
+    player.appendChild(zone);
 
     const enterBtn = document.createElement("button");
     enterBtn.id = "ywf-enter";
@@ -27,7 +30,7 @@
       applyState(true);
       chrome.storage.local.set({ [STORAGE_KEY]: true });
     });
-    document.body.appendChild(enterBtn);
+    player.appendChild(enterBtn);
 
     const exitBtn = document.createElement("button");
     exitBtn.id = "ywf-exit";
@@ -36,7 +39,7 @@
       applyState(false);
       chrome.storage.local.set({ [STORAGE_KEY]: false });
     });
-    document.body.appendChild(exitBtn);
+    player.appendChild(exitBtn);
   }
 
   function applyState(enabled) {

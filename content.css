@@ -116,12 +116,16 @@ html.ywf-active #movie_player {
   background: #000 !important;
 }
 
-/* ===== Toggle Buttons (upper-right hover zone) ===== */
+/* ===== Toggle Buttons (upper-right of player) ===== */
+
+#movie_player {
+  position: relative;
+}
 
 #ywf-enter,
 #ywf-exit {
   display: none;
-  position: fixed;
+  position: absolute;
   top: 8px;
   right: 8px;
   z-index: 200000;
@@ -148,7 +152,7 @@ html.ywf-active #movie_player {
 
 #ywf-toggle-zone {
   display: none;
-  position: fixed;
+  position: absolute;
   top: 0;
   right: 0;
   width: 150px;
