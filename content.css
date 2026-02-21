@@ -181,6 +181,7 @@ html.ywf-active #ywf-enter {
 /* Exit button: visible when active */
 html.ywf-active #ywf-exit {
   display: block;
+  right: 24px;
 }
 
 /* Hover to reveal */
