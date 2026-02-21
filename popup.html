@@ -21,6 +21,26 @@
       color: #fff;
     }
 
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    .header h1 {
+      margin-bottom: 0;
+    }
+
+    #version {
+      position: absolute;
+      right: 0;
+      font-size: 10px;
+      color: #555;
+      font-weight: 400;
+    }
+
     .toggle-row {
       display: flex;
       align-items: center;
@@ -111,7 +131,10 @@
   </style>
 </head>
 <body>
-  <h1>YouTube Windowed Fullscreen</h1>
+  <div class="header">
+    <h1>YouTube Windowed Fullscreen</h1>
+    <span id="version"></span>
+  </div>
   <div id="status-msg"></div>
   <div class="toggle-row">
     <span class="toggle-label" id="state-label">OFF</span>
@@ -123,7 +146,6 @@
   <div class="hint">
     <span><kbd>Alt+Shift+F</kbd> to toggle</span>
     <span>Only works on YouTube watch pages</span>
-    <span id="version" style="margin-top: 8px; color: #555;"></span>
   </div>
   <script src="popup.js"></script>
 </body>
