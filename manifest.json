@@ -1,39 +1,39 @@
 {
-    "manifest_version":  3,
-    "name":  "YouTube Windowed Fullscreen",
-    "description":  "Makes YouTube video player fill the entire browser window for a windowed fullscreen experience",
-    "version":  "1.3.12",
-    "permissions":  [
-                        "activeTab",
-                        "storage"
-                    ],
-    "host_permissions":  [
-                             "https://api.github.com/*"
-                         ],
-    "action":  {
-                   "default_popup":  "popup.html",
-                   "default_icons":  {
-                                         "16":  "icons/icon16.png",
-                                         "48":  "icons/icon48.png",
-                                         "128":  "icons/icon128.png"
-                                     }
-               },
-    "content_scripts":  [
-                            {
-                                "matches":  [
-                                                "*://*.youtube.com/*"
-                                            ],
-                                "js":  [
-                                           "content.js"
-                                       ],
-                                "css":  [
-                                            "content.css"
-                                        ]
-                            }
-                        ],
-    "icons":  {
-                  "16":  "icons/icon16.png",
-                  "48":  "icons/icon48.png",
-                  "128":  "icons/icon128.png"
-              }
+  "manifest_version": 3,
+  "name": "YouTube Windowed Fullscreen",
+  "description": "Makes YouTube video player fill the entire browser window for a windowed fullscreen experience",
+  "version": "1.4.0",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.github.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icons": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.youtube.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ]
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
 }
