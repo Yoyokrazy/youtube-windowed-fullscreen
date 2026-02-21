@@ -2,7 +2,7 @@
     "manifest_version":  3,
     "name":  "YouTube Windowed Fullscreen",
     "description":  "Makes YouTube video player fill the entire browser window for a windowed fullscreen experience",
-    "version":  "1.4.2",
+    "version":  "1.4.3",
     "permissions":  [
                         "activeTab",
                         "storage"
@@ -10,6 +10,9 @@
     "host_permissions":  [
                              "https://api.github.com/*"
                          ],
+    "background":  {
+                       "service_worker":  "background.js"
+                   },
     "action":  {
                    "default_popup":  "popup.html",
                    "default_icons":  {

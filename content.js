@@ -27,7 +27,7 @@
 
     const btn = document.createElement("button");
     btn.id = "ywf-exit";
-    btn.textContent = "Exit Windowed Fullscreen";
+    btn.textContent = "Exit Window Fullscreen";
     btn.addEventListener("click", () => {
       applyState(false);
       chrome.storage.local.set({ [STORAGE_KEY]: false });
@@ -43,8 +43,10 @@
 
     const btn = document.createElement("button");
     btn.id = "ywf-mega-exit";
-    btn.textContent = "Exit Fullscreen";
-    btn.addEventListener("click", () => exitMega());
+    btn.textContent = "Exit App Fullscreen";
+    btn.addEventListener("click", () => {
+      chrome.runtime.sendMessage({ action: "closeMega" });
+    });
     document.body.appendChild(btn);
   }
 
@@ -78,27 +80,19 @@
     return true;
   }
 
-  async function enterMega() {
+  // Mega fullscreen: opens a chromeless popup window at the same size/position
+  function enterMega() {
     if (!isWatchPage()) return;
-    if (!isActive()) {
-      applyState(true);
-      chrome.storage.local.set({ [STORAGE_KEY]: true });
-    }
-    createExitElements();
-    createMegaExitElements();
-    document.documentElement.classList.add(MEGA_CLASS);
-    try {
-      await document.documentElement.requestFullscreen();
-    } catch {}
+    const video = document.querySelector("video");
+    const time = video ? Math.floor(video.currentTime) : 0;
+    const url = new URL(window.location.href);
+    url.searchParams.set("t", time + "s");
+    url.hash = "ywf-mega";
+    chrome.runtime.sendMessage({ action: "openMega", url: url.toString() });
   }
 
   function exitMega() {
-    document.documentElement.classList.remove(MEGA_CLASS);
-    applyState(false);
-    chrome.storage.local.set({ [STORAGE_KEY]: false });
-    if (document.fullscreenElement) {
-      document.exitFullscreen().catch(() => {});
-    }
+    chrome.runtime.sendMessage({ action: "closeMega" });
   }
 
   function toggleMega() {
@@ -109,14 +103,15 @@
     }
   }
 
-  // Exit mega mode when browser exits fullscreen (e.g. Escape key)
-  document.addEventListener("fullscreenchange", () => {
-    if (!document.fullscreenElement && isMega()) {
-      document.documentElement.classList.remove(MEGA_CLASS);
-      applyState(false);
-      chrome.storage.local.set({ [STORAGE_KEY]: false });
+  // Detect if this page was opened as a mega fullscreen popup
+  function initMegaMode() {
+    if (window.location.hash === "#ywf-mega") {
+      history.replaceState(null, "", window.location.href.split("#")[0]);
+      document.documentElement.classList.add(MEGA_CLASS);
+      applyState(true);
+      createMegaExitElements();
     }
-  });
+  }
 
   // Listen for messages from popup
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
@@ -134,14 +129,20 @@
 
   // Keyboard shortcuts
   document.addEventListener("keydown", (e) => {
+    // Escape exits mega popup
+    if (e.key === "Escape" && isMega()) {
+      e.preventDefault();
+      exitMega();
+      return;
+    }
     // Ctrl+Alt+Shift+F for mega (check first since it's a superset)
     if (shouldMegaToggleOnKeydown(e)) {
       e.preventDefault();
       toggleMega();
       return;
     }
-    // Alt+Shift+F for windowed fullscreen
-    if (shouldToggleOnKeydown(e)) {
+    // Alt+Shift+F for windowed fullscreen (disabled in mega popup)
+    if (shouldToggleOnKeydown(e) && !isMega()) {
       e.preventDefault();
       toggle();
     }
@@ -149,6 +150,7 @@
 
   // Handle YouTube SPA navigation
   function onNavigate() {
+    if (isMega()) return; // Don't override mega state
     chrome.storage.local.get(STORAGE_KEY, (result) => {
       applyState(!!result[STORAGE_KEY]);
     });
@@ -167,7 +169,8 @@
     titleObserver.observe(titleEl, { childList: true });
   }
 
-  // Initial load: restore saved state
+  // Initial load
+  initMegaMode();
   onNavigate();
 
   // Export for testing

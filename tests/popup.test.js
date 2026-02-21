@@ -6,8 +6,8 @@ function setupDOM() {
     <span id="version"></span>
     <div id="update-banner"></div>
     <div id="status-msg"></div>
-    <span id="state-label">OFF</span>
     <input type="checkbox" id="toggle">
+    <input type="checkbox" id="mega-toggle">
   `;
 }
 
@@ -86,16 +86,14 @@ describe("popup.js", () => {
     let popup;
     beforeEach(() => { popup = loadPopup(); });
 
-    test("sets toggle checked and label to ON when enabled", () => {
+    test("sets toggle checked when enabled", () => {
       popup.updateUI(true);
       expect(document.getElementById("toggle").checked).toBe(true);
-      expect(document.getElementById("state-label").textContent).toBe("ON");
     });
 
-    test("sets toggle unchecked and label to OFF when disabled", () => {
+    test("sets toggle unchecked when disabled", () => {
       popup.updateUI(false);
       expect(document.getElementById("toggle").checked).toBe(false);
-      expect(document.getElementById("state-label").textContent).toBe("OFF");
     });
   });
 
@@ -145,7 +143,6 @@ describe("popup.js", () => {
       });
       await flush();
       expect(document.getElementById("toggle").checked).toBe(true);
-      expect(document.getElementById("state-label").textContent).toBe("ON");
     });
   });
 
