@@ -17,23 +17,52 @@ function isNewer(remote, local) {
 }
 
 async function checkForUpdate() {
+  let localFileVersion = null;
+  let remoteVersion = null;
+
+  // Check 1: local files on disk vs loaded extension
   try {
-    const res = await fetch(
-      "https://raw.githubusercontent.com/Yoyokrazy/youtube-windowed-fullscreen/master/manifest.json",
-      { cache: "no-store" }
-    );
-    if (!res.ok) return;
-    const text = (await res.text()).replace(/^\uFEFF/, "");
-    const remote = JSON.parse(text);
-    if (isNewer(remote.version, localVersion)) {
-      updateBanner.innerHTML =
-        `Update available: v${remote.version}<br><button id="reload-btn">Reload Extension</button>`;
-      updateBanner.style.display = "block";
-      document.getElementById("reload-btn").addEventListener("click", () => {
-        chrome.runtime.reload();
-      });
+    const localUrl = chrome.runtime.getURL("manifest.json");
+    const localRes = await fetch(localUrl, { cache: "no-store" });
+    if (localRes.ok) {
+      const localText = (await localRes.text()).replace(/^\uFEFF/, "");
+      const localManifest = JSON.parse(localText);
+      localFileVersion = localManifest.version;
     }
   } catch {}
+
+  // Check 2: latest GitHub release tag
+  try {
+    const res = await fetch(
+      "https://api.github.com/repos/Yoyokrazy/youtube-windowed-fullscreen/releases/latest",
+      { cache: "no-store" }
+    );
+    if (res.ok) {
+      const release = JSON.parse(await res.text());
+      remoteVersion = release.tag_name.replace(/^v/, "");
+    }
+  } catch {}
+
+  const localNewer = localFileVersion && isNewer(localFileVersion, localVersion);
+  const remoteNewer = remoteVersion && isNewer(remoteVersion, localVersion);
+
+  if (localNewer) {
+    // Local files updated, just need to reload
+    updateBanner.innerHTML =
+      `Local update available: v${localFileVersion}<br><button id="reload-btn">Reload Extension</button>`;
+    updateBanner.style.display = "block";
+    document.getElementById("reload-btn").addEventListener("click", () => {
+      chrome.runtime.reload();
+    });
+  } else if (remoteNewer && !localNewer) {
+    // Remote is ahead but local files haven't been pulled yet
+    updateBanner.innerHTML =
+      `v${remoteVersion} available — pull latest in your extension directory, then reload<br><button id="reload-btn">Reload Extension</button>`;
+    updateBanner.style.display = "block";
+    document.getElementById("reload-btn").addEventListener("click", () => {
+      chrome.runtime.reload();
+    });
+  }
 }
 
 checkForUpdate();
