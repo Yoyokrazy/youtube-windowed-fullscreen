@@ -49,6 +49,8 @@
       document.documentElement.classList.add(CLASS_NAME);
     } else {
       document.documentElement.classList.remove(CLASS_NAME);
+      // Trigger YouTube to recalculate player dimensions
+      window.dispatchEvent(new Event("resize"));
     }
   }
 
