@@ -6,6 +6,12 @@
   const CLASS_NAME = "ywf-active";
   const STORAGE_KEY = "ywf-enabled";
 
+  // Returns false when the extension has been reloaded and this
+  // orphaned content script should stop touching chrome.* APIs.
+  function isContextValid() {
+    return !!(chrome.runtime && chrome.runtime.id);
+  }
+
   function isWatchPage() {
     const path = window.location.pathname;
     return path === "/watch" || path.startsWith("/live/");
@@ -13,11 +19,6 @@
 
   function isActive() {
     return document.documentElement.classList.contains(CLASS_NAME);
-  }
-
-  // Guard against extension context being invalidated after reload
-  function safeStorageSet(data) {
-    try { chrome.storage.local.set(data); } catch {}
   }
 
   function createToggleElements() {
@@ -34,7 +35,7 @@
     enterBtn.textContent = "Enter Windowed Fullscreen";
     enterBtn.addEventListener("click", () => {
       applyState(true);
-      safeStorageSet({ [STORAGE_KEY]: true });
+      if (isContextValid()) chrome.storage.local.set({ [STORAGE_KEY]: true });
     });
     player.appendChild(enterBtn);
 
@@ -43,7 +44,7 @@
     exitBtn.textContent = "Exit Windowed Fullscreen";
     exitBtn.addEventListener("click", () => {
       applyState(false);
-      safeStorageSet({ [STORAGE_KEY]: false });
+      if (isContextValid()) chrome.storage.local.set({ [STORAGE_KEY]: false });
     });
     player.appendChild(exitBtn);
   }
@@ -62,7 +63,7 @@
   function toggle() {
     const newState = !isActive();
     applyState(newState);
-    safeStorageSet({ [STORAGE_KEY]: newState });
+    if (isContextValid()) chrome.storage.local.set({ [STORAGE_KEY]: newState });
     return newState;
   }
 
@@ -94,11 +95,10 @@
 
   // Handle YouTube SPA navigation
   function onNavigate() {
-    try {
-      chrome.storage.local.get(STORAGE_KEY, (result) => {
-        applyState(!!result[STORAGE_KEY]);
-      });
-    } catch {}
+    if (!isContextValid()) return;
+    chrome.storage.local.get(STORAGE_KEY, (result) => {
+      applyState(!!result[STORAGE_KEY]);
+    });
   }
 
   window.addEventListener("yt-navigate-finish", onNavigate);

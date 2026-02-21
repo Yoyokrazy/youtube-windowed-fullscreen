@@ -4,6 +4,7 @@ const storage = {};
 
 const chrome = {
   runtime: {
+    id: "mock-extension-id",
     onMessage: {
       addListener: jest.fn(),
     },
