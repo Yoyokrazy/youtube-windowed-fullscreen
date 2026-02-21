@@ -10,8 +10,6 @@ function createMegaWindow(url, originWindowId, originTabId, sendResponse) {
       width: win.width,
       height: win.height,
     }, (newWin) => {
-      // Fullscreen the popup to remove the title bar
-      chrome.windows.update(newWin.id, { state: "fullscreen" });
       chrome.storage.local.set({
         "ywf-mega-origin": win.id,
         "ywf-mega-origin-tab": originTabId,
@@ -42,6 +40,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         createMegaWindow(message.url, originWindowId, originTabId, sendResponse);
       }
     });
+    return true;
+  }
+
+  if (message.action === "repositionMega") {
+    // Shift the popup window up to hide the title bar off-screen
+    chrome.storage.local.get("ywf-mega-window", (result) => {
+      if (result["ywf-mega-window"]) {
+        chrome.windows.update(result["ywf-mega-window"], {
+          top: message.availTop - message.shiftUp,
+          height: message.availHeight + message.shiftUp,
+        });
+      }
+    });
+    sendResponse({ ok: true });
     return true;
   }
 

@@ -115,6 +115,16 @@
       document.documentElement.classList.add(MEGA_CLASS);
       applyState(true);
       createMegaExitElements();
+      // Shift window up to hide title bar off the top of the screen
+      const chromeHeight = window.outerHeight - window.innerHeight;
+      if (chromeHeight > 0) {
+        chrome.runtime.sendMessage({
+          action: "repositionMega",
+          shiftUp: chromeHeight,
+          availTop: window.screen.availTop,
+          availHeight: window.screen.availHeight,
+        });
+      }
     }
   }
 
