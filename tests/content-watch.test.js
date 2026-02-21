@@ -3,16 +3,13 @@
  * @jest-environment-options {"url": "https://www.youtube.com/watch?v=test123"}
  */
 
-require("./chrome-mock");
+const { loadContentScript } = require("./helpers/test-utils");
 
 describe("content.js on /watch page", () => {
   let content;
 
   beforeEach(() => {
-    document.documentElement.className = "";
-    jest.resetModules();
-    require("./chrome-mock");
-    content = require("../content");
+    content = loadContentScript();
   });
 
   test("isWatchPage returns true", () => {

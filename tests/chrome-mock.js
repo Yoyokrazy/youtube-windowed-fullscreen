@@ -39,4 +39,30 @@ function resetStorage() {
 global.chrome = chrome;
 global.fetch = jest.fn(() => Promise.resolve({ ok: false }));
 
-module.exports = { chrome, resetStorage };
+function resetMocks() {
+  // Clear all mock call history
+  chrome.runtime.onMessage.addListener.mockClear();
+  chrome.runtime.getManifest.mockClear();
+  chrome.runtime.reload.mockClear();
+  chrome.storage.local.get.mockClear();
+  chrome.storage.local.set.mockClear();
+  chrome.tabs.query.mockClear();
+  chrome.tabs.sendMessage.mockClear();
+  chrome.tabs.create.mockClear();
+  global.fetch.mockClear();
+
+  // Reset storage
+  resetStorage();
+
+  // Restore default return values
+  chrome.tabs.query.mockImplementation(() =>
+    Promise.resolve([{ id: 1, url: "https://www.youtube.com/watch?v=test" }])
+  );
+  chrome.tabs.sendMessage.mockImplementation(() =>
+    Promise.resolve({ active: false })
+  );
+  chrome.runtime.getManifest.mockImplementation(() => ({ version: "1.0.0" }));
+  global.fetch.mockImplementation(() => Promise.resolve({ ok: false }));
+}
+
+module.exports = { chrome, resetStorage, resetMocks };

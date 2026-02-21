@@ -5,6 +5,7 @@
   "main": "content.js",
   "scripts": {
     "test": "jest",
+    "test:unit": "jest --testPathPatterns=tests/",
     "test:watch": "jest --watch"
   },
   "keywords": [],

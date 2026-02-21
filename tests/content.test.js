@@ -1,66 +1,51 @@
-require("./chrome-mock");
+const { loadContentScript, makeKeyboardEvent } = require("./helpers/test-utils");
 
 describe("content.js", () => {
   let content;
 
   beforeEach(() => {
-    document.documentElement.className = "";
-    jest.resetModules();
-    require("./chrome-mock");
-    content = require("../content");
+    content = loadContentScript();
   });
 
   describe("shouldToggleOnKeydown", () => {
-    function makeEvent(overrides = {}) {
-      return {
-        altKey: true,
-        shiftKey: true,
-        key: "F",
-        ctrlKey: false,
-        metaKey: false,
-        target: { tagName: "BODY", isContentEditable: false },
-        ...overrides,
-      };
-    }
-
     test("returns true for Alt+Shift+F on body", () => {
-      expect(content.shouldToggleOnKeydown(makeEvent())).toBe(true);
+      expect(content.shouldToggleOnKeydown(makeKeyboardEvent())).toBe(true);
     });
 
     test("returns false without Alt", () => {
-      expect(content.shouldToggleOnKeydown(makeEvent({ altKey: false }))).toBe(false);
+      expect(content.shouldToggleOnKeydown(makeKeyboardEvent({ altKey: false }))).toBe(false);
     });
 
     test("returns false without Shift", () => {
-      expect(content.shouldToggleOnKeydown(makeEvent({ shiftKey: false }))).toBe(false);
+      expect(content.shouldToggleOnKeydown(makeKeyboardEvent({ shiftKey: false }))).toBe(false);
     });
 
     test("returns false with Ctrl", () => {
-      expect(content.shouldToggleOnKeydown(makeEvent({ ctrlKey: true }))).toBe(false);
+      expect(content.shouldToggleOnKeydown(makeKeyboardEvent({ ctrlKey: true }))).toBe(false);
     });
 
     test("returns false with Meta", () => {
-      expect(content.shouldToggleOnKeydown(makeEvent({ metaKey: true }))).toBe(false);
+      expect(content.shouldToggleOnKeydown(makeKeyboardEvent({ metaKey: true }))).toBe(false);
     });
 
     test("returns false for wrong key", () => {
-      expect(content.shouldToggleOnKeydown(makeEvent({ key: "G" }))).toBe(false);
+      expect(content.shouldToggleOnKeydown(makeKeyboardEvent({ key: "G" }))).toBe(false);
     });
 
     test("returns false when target is INPUT", () => {
-      expect(content.shouldToggleOnKeydown(makeEvent({
+      expect(content.shouldToggleOnKeydown(makeKeyboardEvent({
         target: { tagName: "INPUT", isContentEditable: false },
       }))).toBe(false);
     });
 
     test("returns false when target is TEXTAREA", () => {
-      expect(content.shouldToggleOnKeydown(makeEvent({
+      expect(content.shouldToggleOnKeydown(makeKeyboardEvent({
         target: { tagName: "TEXTAREA", isContentEditable: false },
       }))).toBe(false);
     });
 
     test("returns false when target is contentEditable", () => {
-      expect(content.shouldToggleOnKeydown(makeEvent({
+      expect(content.shouldToggleOnKeydown(makeKeyboardEvent({
         target: { tagName: "DIV", isContentEditable: true },
       }))).toBe(false);
     });

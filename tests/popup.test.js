@@ -1,43 +1,9 @@
-require("./chrome-mock");
-
-// Helper to set up popup DOM before requiring popup.js
-function setupDOM() {
-  document.body.innerHTML = `
-    <span id="version"></span>
-    <div id="update-banner"></div>
-    <div id="status-msg"></div>
-    <input type="checkbox" id="toggle">
-  `;
-}
-
-// popup.js self-executes on require, so we need DOM ready first
-function loadPopup(opts = {}) {
-  jest.resetModules();
-  require("./chrome-mock");
-
-  if (opts.tabUrl !== undefined) {
-    chrome.tabs.query.mockReturnValue(
-      Promise.resolve([opts.tabUrl ? { id: 1, url: opts.tabUrl } : { id: 1 }])
-    );
-  }
-  if (opts.sendMessageResponse !== undefined) {
-    chrome.tabs.sendMessage.mockReturnValue(Promise.resolve(opts.sendMessageResponse));
-  }
-  if (opts.sendMessageError) {
-    chrome.tabs.sendMessage.mockReturnValue(Promise.reject(new Error("no content script")));
-  }
-
-  setupDOM();
-  return require("../popup");
-}
-
-// Let async init() settle
-const flush = () => new Promise((r) => setTimeout(r, 50));
+const { loadPopupScript, flushPromises } = require("./helpers/test-utils");
 
 describe("popup.js", () => {
   describe("isNewer", () => {
     let popup;
-    beforeAll(() => { popup = loadPopup(); });
+    beforeAll(() => { popup = loadPopupScript(); });
 
     test("returns true when remote major is higher", () => {
       expect(popup.isNewer("2.0.0", "1.0.0")).toBe(true);
@@ -83,7 +49,7 @@ describe("popup.js", () => {
 
   describe("updateUI", () => {
     let popup;
-    beforeEach(() => { popup = loadPopup(); });
+    beforeEach(() => { popup = loadPopupScript(); });
 
     test("sets toggle checked when enabled", () => {
       popup.updateUI(true);
@@ -98,7 +64,7 @@ describe("popup.js", () => {
 
   describe("showError", () => {
     let popup;
-    beforeEach(() => { popup = loadPopup(); });
+    beforeEach(() => { popup = loadPopupScript(); });
 
     test("displays error message and disables toggle", () => {
       popup.showError("Test error");
@@ -111,43 +77,43 @@ describe("popup.js", () => {
 
   describe("init", () => {
     test("shows error when not on YouTube", async () => {
-      loadPopup({ tabUrl: "https://www.google.com" });
-      await flush();
+      loadPopupScript({ tabUrl: "https://www.google.com" });
+      await flushPromises();
       const msg = document.getElementById("status-msg");
       expect(msg.textContent).toBe("Navigate to a YouTube video first");
       expect(msg.style.display).toBe("block");
     });
 
     test("shows error when tab has no URL", async () => {
-      loadPopup({ tabUrl: null });
-      await flush();
+      loadPopupScript({ tabUrl: null });
+      await flushPromises();
       const msg = document.getElementById("status-msg");
       expect(msg.textContent).toBe("Navigate to a YouTube video first");
     });
 
     test("shows error when content script unreachable", async () => {
-      loadPopup({
+      loadPopupScript({
         tabUrl: "https://www.youtube.com/watch?v=abc",
         sendMessageError: true,
       });
-      await flush();
+      await flushPromises();
       const msg = document.getElementById("status-msg");
       expect(msg.textContent).toBe("Navigate to a YouTube video first");
     });
 
     test("updates UI with active state from content script", async () => {
-      loadPopup({
+      loadPopupScript({
         tabUrl: "https://www.youtube.com/watch?v=abc",
         sendMessageResponse: { active: true },
       });
-      await flush();
+      await flushPromises();
       expect(document.getElementById("toggle").checked).toBe(true);
     });
   });
 
   describe("version display", () => {
     test("shows version from manifest", () => {
-      loadPopup();
+      loadPopupScript();
       expect(document.getElementById("version").textContent).toBe("v1.0.0");
     });
   });
