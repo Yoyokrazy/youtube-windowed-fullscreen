@@ -23,7 +23,8 @@ async function checkForUpdate() {
       { cache: "no-store" }
     );
     if (!res.ok) return;
-    const remote = await res.json();
+    const text = (await res.text()).replace(/^\uFEFF/, "");
+    const remote = JSON.parse(text);
     if (isNewer(remote.version, localVersion)) {
       updateBanner.innerHTML =
         `Update available: v${remote.version}<br><button id="reload-btn">Reload Extension</button>`;

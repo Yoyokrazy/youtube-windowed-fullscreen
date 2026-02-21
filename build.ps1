@@ -25,6 +25,8 @@ switch ($Bump) {
 
 $newVersion = "$major.$minor.$patch"
 $manifest.version = $newVersion
-$manifest | ConvertTo-Json -Depth 10 | Set-Content $manifestPath -Encoding UTF8
+$json = $manifest | ConvertTo-Json -Depth 10
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::WriteAllText($manifestPath, $json, $utf8NoBom)
 
 Write-Host "Build complete: v$newVersion"
