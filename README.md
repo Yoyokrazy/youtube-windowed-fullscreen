@@ -13,14 +13,33 @@ When you want to maximize video viewing space while keeping your browser windowe
 - **Persists across navigation** — Your preference is remembered as you navigate between videos
 - **Dark-themed popup** — Clean, minimal UI that matches YouTube's aesthetic
 
-## Installation
+## Build & Install
 
-1. Clone or download this repository
-2. Open Chrome and go to `chrome://extensions`
-3. Enable **Developer mode** (toggle in the top right)
-4. Click **Load unpacked**
-5. Select the extension folder
-6. The extension is now installed and ready to use
+There is no build step — the extension is plain JS and CSS loaded directly by Chrome.
+
+### 1. Get the source
+
+```bash
+git clone https://github.com/Yoyokrazy/youtube-windowed-fullscreen.git
+```
+
+Or download and extract the [latest zip from GitHub](https://github.com/Yoyokrazy/youtube-windowed-fullscreen/archive/refs/heads/master.zip).
+
+### 2. Load into Chrome
+
+1. Open Chrome and navigate to `chrome://extensions`
+2. Enable **Developer mode** (toggle in the top right)
+3. Click **Load unpacked**
+4. Select the `youtube-windowed-fullscreen` folder (the one containing `manifest.json`)
+5. The extension icon will appear in your toolbar — you're done
+
+### Updating
+
+After pulling new changes or editing files locally:
+
+1. Go to `chrome://extensions`
+2. Click the **refresh icon** (↻) on the extension card
+3. Reload any open YouTube tabs
 
 ## Usage
 
