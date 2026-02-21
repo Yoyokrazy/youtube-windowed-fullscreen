@@ -27,6 +27,7 @@ const chrome = {
   tabs: {
     query: jest.fn(() => Promise.resolve([{ id: 1, url: "https://www.youtube.com/watch?v=test" }])),
     sendMessage: jest.fn(() => Promise.resolve({ active: false })),
+    create: jest.fn(),
   },
 };
 

@@ -21,6 +21,72 @@
       color: #fff;
     }
 
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      position: relative;
+      margin-bottom: 4px;
+    }
+
+    .header h1 {
+      margin-bottom: 0;
+    }
+
+    .menu-wrapper {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 0 2px;
+      line-height: 1;
+      letter-spacing: 1px;
+    }
+
+    .menu-btn:hover {
+      color: #fff;
+    }
+
+    .menu-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 22px;
+      background: #272727;
+      border: 1px solid #383838;
+      border-radius: 6px;
+      min-width: 160px;
+      z-index: 10;
+      overflow: hidden;
+    }
+
+    .menu-dropdown.open {
+      display: block;
+    }
+
+    .menu-dropdown a {
+      display: block;
+      padding: 8px 12px;
+      color: #e0e0e0;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    .menu-dropdown a:hover {
+      background: #383838;
+    }
+
+    .menu-dropdown a + a {
+      border-top: 1px solid #333;
+    }
+
     #version {
       display: block;
       text-align: center;
@@ -148,7 +214,16 @@
   </style>
 </head>
 <body>
-  <h1>YouTube Windowed Fullscreen</h1>
+  <div class="header">
+    <h1>YouTube Windowed Fullscreen</h1>
+    <div class="menu-wrapper">
+      <button class="menu-btn" id="menu-btn" title="Menu">⋮</button>
+      <div class="menu-dropdown" id="menu-dropdown">
+        <a href="https://github.com/Yoyokrazy/youtube-windowed-fullscreen" target="_blank">GitHub Repo</a>
+        <a href="#" id="report-bug">Report a Bug</a>
+      </div>
+    </div>
+  </div>
   <span id="version"></span>
   <div id="update-banner"></div>
   <div id="status-msg"></div>

@@ -82,6 +82,32 @@ toggle.addEventListener("change", async () => {
 
 init();
 
+// Three-dot menu
+const menuBtn = document.getElementById("menu-btn");
+const menuDropdown = document.getElementById("menu-dropdown");
+
+if (menuBtn) {
+  menuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    menuDropdown.classList.toggle("open");
+  });
+
+  document.addEventListener("click", () => {
+    menuDropdown.classList.remove("open");
+  });
+}
+
+// Bug report link with auto-filled version and browser info
+const reportBug = document.getElementById("report-bug");
+if (reportBug) {
+  reportBug.addEventListener("click", (e) => {
+    e.preventDefault();
+    const body = `**Extension Version:** v${localVersion}\n**Browser:** ${navigator.userAgent}\n\n**Description:**\n\n**Steps to reproduce:**\n1. \n2. \n3. \n`;
+    const url = `https://github.com/Yoyokrazy/youtube-windowed-fullscreen/issues/new?body=${encodeURIComponent(body)}`;
+    chrome.tabs.create({ url });
+  });
+}
+
 // Export for testing
 if (typeof module !== "undefined" && module.exports) {
   module.exports = { isNewer, updateUI, showError, init };
