@@ -25,8 +25,8 @@ const chrome = {
     },
   },
   tabs: {
-    query: jest.fn(),
-    sendMessage: jest.fn(),
+    query: jest.fn(() => Promise.resolve([{ id: 1, url: "https://www.youtube.com/watch?v=test" }])),
+    sendMessage: jest.fn(() => Promise.resolve({ active: false })),
   },
 };
 
@@ -35,5 +35,6 @@ function resetStorage() {
 }
 
 global.chrome = chrome;
+global.fetch = jest.fn(() => Promise.resolve({ ok: false }));
 
 module.exports = { chrome, resetStorage };

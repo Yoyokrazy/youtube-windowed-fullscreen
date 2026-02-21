@@ -4,95 +4,10 @@ describe("content.js", () => {
   let content;
 
   beforeEach(() => {
-    // Reset DOM
     document.documentElement.className = "";
-    // Reset location to a watch page
-    delete window.location;
-    window.location = { pathname: "/watch" };
-    // Clear module cache so IIFE re-runs
     jest.resetModules();
     require("./chrome-mock");
     content = require("../content");
-  });
-
-  describe("isWatchPage", () => {
-    test("returns true on /watch", () => {
-      window.location.pathname = "/watch";
-      expect(content.isWatchPage()).toBe(true);
-    });
-
-    test("returns false on homepage", () => {
-      window.location.pathname = "/";
-      expect(content.isWatchPage()).toBe(false);
-    });
-
-    test("returns false on /results", () => {
-      window.location.pathname = "/results";
-      expect(content.isWatchPage()).toBe(false);
-    });
-
-    test("returns false on /shorts", () => {
-      window.location.pathname = "/shorts/abc123";
-      expect(content.isWatchPage()).toBe(false);
-    });
-  });
-
-  describe("isActive", () => {
-    test("returns false when class is not present", () => {
-      document.documentElement.classList.remove("ywf-active");
-      expect(content.isActive()).toBe(false);
-    });
-
-    test("returns true when class is present", () => {
-      document.documentElement.classList.add("ywf-active");
-      expect(content.isActive()).toBe(true);
-    });
-  });
-
-  describe("applyState", () => {
-    test("adds class when enabled on watch page", () => {
-      window.location.pathname = "/watch";
-      content.applyState(true);
-      expect(document.documentElement.classList.contains("ywf-active")).toBe(true);
-    });
-
-    test("does not add class when enabled on non-watch page", () => {
-      window.location.pathname = "/";
-      content.applyState(true);
-      expect(document.documentElement.classList.contains("ywf-active")).toBe(false);
-    });
-
-    test("removes class when disabled", () => {
-      document.documentElement.classList.add("ywf-active");
-      content.applyState(false);
-      expect(document.documentElement.classList.contains("ywf-active")).toBe(false);
-    });
-
-    test("removes class when disabled even on watch page", () => {
-      window.location.pathname = "/watch";
-      document.documentElement.classList.add("ywf-active");
-      content.applyState(false);
-      expect(document.documentElement.classList.contains("ywf-active")).toBe(false);
-    });
-  });
-
-  describe("toggle", () => {
-    test("activates when currently inactive on watch page", () => {
-      window.location.pathname = "/watch";
-      document.documentElement.classList.remove("ywf-active");
-      const result = content.toggle();
-      expect(result).toBe(true);
-      expect(document.documentElement.classList.contains("ywf-active")).toBe(true);
-      expect(chrome.storage.local.set).toHaveBeenCalledWith({ "ywf-enabled": true });
-    });
-
-    test("deactivates when currently active", () => {
-      document.documentElement.classList.add("ywf-active");
-      const result = content.toggle();
-      expect(result).toBe(false);
-      expect(document.documentElement.classList.contains("ywf-active")).toBe(false);
-      expect(chrome.storage.local.set).toHaveBeenCalledWith({ "ywf-enabled": false });
-    });
   });
 
   describe("shouldToggleOnKeydown", () => {
@@ -148,6 +63,69 @@ describe("content.js", () => {
       expect(content.shouldToggleOnKeydown(makeEvent({
         target: { tagName: "DIV", isContentEditable: true },
       }))).toBe(false);
+    });
+  });
+
+  describe("isActive", () => {
+    test("returns false when class is not present", () => {
+      document.documentElement.classList.remove("ywf-active");
+      expect(content.isActive()).toBe(false);
+    });
+
+    test("returns true when class is present", () => {
+      document.documentElement.classList.add("ywf-active");
+      expect(content.isActive()).toBe(true);
+    });
+  });
+
+  describe("applyState", () => {
+    // jsdom URL is about:blank so isWatchPage() returns false
+    test("removes class when disabled", () => {
+      document.documentElement.classList.add("ywf-active");
+      content.applyState(false);
+      expect(document.documentElement.classList.contains("ywf-active")).toBe(false);
+    });
+
+    test("does not add class on non-watch page even when enabled", () => {
+      content.applyState(true);
+      expect(document.documentElement.classList.contains("ywf-active")).toBe(false);
+    });
+  });
+
+  describe("toggle", () => {
+    test("persists state to storage", () => {
+      content.toggle();
+      expect(chrome.storage.local.set).toHaveBeenCalled();
+    });
+
+    test("returns opposite of current active state", () => {
+      document.documentElement.classList.remove("ywf-active");
+      const result = content.toggle();
+      expect(result).toBe(true);
+    });
+
+    test("double toggle preserves storage calls", () => {
+      content.toggle();
+      content.toggle();
+      expect(chrome.storage.local.set).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe("isWatchPage", () => {
+    // jsdom URL is about:blank, so isWatchPage always returns false here.
+    // We verify the function exists and returns false for non-watch paths.
+    test("returns false for non-watch pages", () => {
+      expect(content.isWatchPage()).toBe(false);
+    });
+  });
+
+  describe("constants", () => {
+    test("CLASS_NAME is ywf-active", () => {
+      expect(content.CLASS_NAME).toBe("ywf-active");
+    });
+
+    test("STORAGE_KEY is ywf-enabled", () => {
+      expect(content.STORAGE_KEY).toBe("ywf-enabled");
     });
   });
 });

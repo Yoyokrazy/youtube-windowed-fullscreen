@@ -1,30 +1,45 @@
 require("./chrome-mock");
 
+// Helper to set up popup DOM before requiring popup.js
+function setupDOM() {
+  document.body.innerHTML = `
+    <span id="version"></span>
+    <div id="update-banner"></div>
+    <div id="status-msg"></div>
+    <span id="state-label">OFF</span>
+    <input type="checkbox" id="toggle">
+  `;
+}
+
+// popup.js self-executes on require, so we need DOM ready first
+function loadPopup(opts = {}) {
+  jest.resetModules();
+  require("./chrome-mock");
+
+  if (opts.tabUrl !== undefined) {
+    chrome.tabs.query.mockReturnValue(
+      Promise.resolve([opts.tabUrl ? { id: 1, url: opts.tabUrl } : { id: 1 }])
+    );
+  }
+  if (opts.sendMessageResponse !== undefined) {
+    chrome.tabs.sendMessage.mockReturnValue(Promise.resolve(opts.sendMessageResponse));
+  }
+  if (opts.sendMessageError) {
+    chrome.tabs.sendMessage.mockReturnValue(Promise.reject(new Error("no content script")));
+  }
+
+  setupDOM();
+  return require("../popup");
+}
+
+// Let async init() settle
+const flush = () => new Promise((r) => setTimeout(r, 50));
+
 describe("popup.js", () => {
-  let popup;
-
-  beforeEach(() => {
-    // Set up popup DOM
-    document.body.innerHTML = `
-      <span id="version"></span>
-      <div id="update-banner"></div>
-      <div id="status-msg"></div>
-      <span id="state-label">OFF</span>
-      <input type="checkbox" id="toggle">
-    `;
-
-    // Reset mocks
-    jest.resetModules();
-    global.fetch = jest.fn();
-    chrome.runtime.getManifest.mockReturnValue({ version: "1.0.0" });
-    chrome.tabs.query.mockResolvedValue([{ id: 1, url: "https://www.youtube.com/watch?v=abc" }]);
-    chrome.tabs.sendMessage.mockResolvedValue({ active: false });
-
-    require("./chrome-mock");
-    popup = require("../popup");
-  });
-
   describe("isNewer", () => {
+    let popup;
+    beforeAll(() => { popup = loadPopup(); });
+
     test("returns true when remote major is higher", () => {
       expect(popup.isNewer("2.0.0", "1.0.0")).toBe(true);
     });
@@ -68,6 +83,9 @@ describe("popup.js", () => {
   });
 
   describe("updateUI", () => {
+    let popup;
+    beforeEach(() => { popup = loadPopup(); });
+
     test("sets toggle checked and label to ON when enabled", () => {
       popup.updateUI(true);
       expect(document.getElementById("toggle").checked).toBe(true);
@@ -82,6 +100,9 @@ describe("popup.js", () => {
   });
 
   describe("showError", () => {
+    let popup;
+    beforeEach(() => { popup = loadPopup(); });
+
     test("displays error message and disables toggle", () => {
       popup.showError("Test error");
       const msg = document.getElementById("status-msg");
@@ -93,50 +114,44 @@ describe("popup.js", () => {
 
   describe("init", () => {
     test("shows error when not on YouTube", async () => {
-      chrome.tabs.query.mockResolvedValue([{ id: 1, url: "https://www.google.com" }]);
-      jest.resetModules();
-      require("./chrome-mock");
-
-      document.body.innerHTML = `
-        <span id="version"></span>
-        <div id="update-banner"></div>
-        <div id="status-msg"></div>
-        <span id="state-label">OFF</span>
-        <input type="checkbox" id="toggle">
-      `;
-
-      require("../popup");
-      // Wait for async init
-      await new Promise((r) => setTimeout(r, 50));
-
+      loadPopup({ tabUrl: "https://www.google.com" });
+      await flush();
       const msg = document.getElementById("status-msg");
       expect(msg.textContent).toBe("Navigate to a YouTube video first");
       expect(msg.style.display).toBe("block");
     });
 
     test("shows error when tab has no URL", async () => {
-      chrome.tabs.query.mockResolvedValue([{ id: 1 }]);
-      jest.resetModules();
-      require("./chrome-mock");
-
-      document.body.innerHTML = `
-        <span id="version"></span>
-        <div id="update-banner"></div>
-        <div id="status-msg"></div>
-        <span id="state-label">OFF</span>
-        <input type="checkbox" id="toggle">
-      `;
-
-      require("../popup");
-      await new Promise((r) => setTimeout(r, 50));
-
+      loadPopup({ tabUrl: null });
+      await flush();
       const msg = document.getElementById("status-msg");
       expect(msg.textContent).toBe("Navigate to a YouTube video first");
+    });
+
+    test("shows error when content script unreachable", async () => {
+      loadPopup({
+        tabUrl: "https://www.youtube.com/watch?v=abc",
+        sendMessageError: true,
+      });
+      await flush();
+      const msg = document.getElementById("status-msg");
+      expect(msg.textContent).toBe("Navigate to a YouTube video first");
+    });
+
+    test("updates UI with active state from content script", async () => {
+      loadPopup({
+        tabUrl: "https://www.youtube.com/watch?v=abc",
+        sendMessageResponse: { active: true },
+      });
+      await flush();
+      expect(document.getElementById("toggle").checked).toBe(true);
+      expect(document.getElementById("state-label").textContent).toBe("ON");
     });
   });
 
   describe("version display", () => {
     test("shows version from manifest", () => {
+      loadPopup();
       expect(document.getElementById("version").textContent).toBe("v1.0.0");
     });
   });
