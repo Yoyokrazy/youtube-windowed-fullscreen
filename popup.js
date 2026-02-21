@@ -1,5 +1,4 @@
 const toggle = document.getElementById("toggle");
-const megaToggle = document.getElementById("mega-toggle");
 const statusMsg = document.getElementById("status-msg");
 const updateBanner = document.getElementById("update-banner");
 
@@ -92,7 +91,6 @@ function showError(msg) {
   statusMsg.textContent = msg;
   statusMsg.style.display = "block";
   toggle.disabled = true;
-  megaToggle.disabled = true;
 }
 
 function getActiveTab() {
@@ -110,7 +108,6 @@ async function init() {
   try {
     const response = await chrome.tabs.sendMessage(tab.id, { action: "getState" });
     updateUI(!!response?.active);
-    megaToggle.checked = !!response?.mega;
   } catch {
     showError("Navigate to a YouTube video first");
   }
@@ -124,16 +121,6 @@ toggle.addEventListener("change", async () => {
   } catch {
     showError("Could not reach the page");
     updateUI(false);
-  }
-});
-
-megaToggle.addEventListener("change", async () => {
-  const tab = await getActiveTab();
-  try {
-    await chrome.tabs.sendMessage(tab.id, { action: "toggleMega" });
-  } catch {
-    showError("Could not reach the page");
-    megaToggle.checked = false;
   }
 });
 

@@ -7,7 +7,6 @@ function setupDOM() {
     <div id="update-banner"></div>
     <div id="status-msg"></div>
     <input type="checkbox" id="toggle">
-    <input type="checkbox" id="mega-toggle">
   `;
 }
 
