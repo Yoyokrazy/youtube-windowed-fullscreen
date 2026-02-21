@@ -127,7 +127,7 @@ html.ywf-active #movie_player {
   display: none;
   position: absolute;
   top: 8px;
-  right: 8px;
+  left: 8px;
   z-index: 200000;
   background: rgba(0, 0, 0, 0.6);
   color: #fff;
@@ -159,7 +159,7 @@ html.ywf-active #movie_player {
   display: none;
   position: absolute;
   top: 0;
-  right: 0;
+  left: 0;
   width: 60px;
   height: 50px;
   z-index: 199999;
