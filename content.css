@@ -1,0 +1,118 @@
+/* YouTube Windowed Fullscreen - Content Styles */
+
+/* Smooth transition for toggling */
+html.ywf-active #movie_player,
+html.ywf-active ytd-player {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Fix the player to cover the entire viewport */
+html.ywf-active #movie_player {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 100vw !important;
+  min-height: 100vh !important;
+  z-index: 99999 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html.ywf-active ytd-player {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 99999 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Make the video element fill the player */
+html.ywf-active #movie_player video,
+html.ywf-active #movie_player .html5-video-container,
+html.ywf-active #movie_player .html5-main-video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+html.ywf-active .html5-video-container {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Override YouTube's theater mode and inline style constraints */
+html.ywf-active #player-theater-container,
+html.ywf-active #player-container-outer,
+html.ywf-active #player-container-inner,
+html.ywf-active #player-container {
+  max-height: none !important;
+  min-height: 100vh !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  max-width: none !important;
+}
+
+html.ywf-active ytd-watch-flexy[theater] #player-theater-container {
+  max-height: none !important;
+  height: 100vh !important;
+}
+
+html.ywf-active ytd-watch-flexy {
+  --ytd-watch-flexy-panel-max-height: 100vh !important;
+}
+
+/* Hide non-player UI elements */
+html.ywf-active ytd-watch-flexy #secondary,
+html.ywf-active #below,
+html.ywf-active ytd-masthead,
+html.ywf-active #masthead-container,
+html.ywf-active ytd-mini-guide-renderer,
+html.ywf-active tp-yt-app-drawer,
+html.ywf-active #guide,
+html.ywf-active #chat,
+html.ywf-active ytd-engagement-panel-section-list-renderer,
+html.ywf-active #panels,
+html.ywf-active #description,
+html.ywf-active #meta,
+html.ywf-active #info-contents {
+  display: none !important;
+}
+
+/* Prevent page scrolling */
+html.ywf-active,
+html.ywf-active body {
+  overflow: hidden !important;
+}
+
+/* Ensure player controls remain visible and usable */
+html.ywf-active .ytp-chrome-bottom {
+  z-index: 100000 !important;
+  opacity: 1 !important;
+}
+
+html.ywf-active .ytp-gradient-bottom {
+  z-index: 99999 !important;
+}
+
+/* Settings menus and overlays inside the player */
+html.ywf-active .ytp-popup,
+html.ywf-active .ytp-settings-menu {
+  z-index: 100001 !important;
+}
+
+/* Black background behind the video */
+html.ywf-active #movie_player {
+  background: #000 !important;
+}

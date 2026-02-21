@@ -1,0 +1,78 @@
+// YouTube Windowed Fullscreen - Content Script
+
+(function () {
+  "use strict";
+
+  const CLASS_NAME = "ywf-active";
+  const STORAGE_KEY = "ywf-enabled";
+
+  function isWatchPage() {
+    return location.pathname === "/watch";
+  }
+
+  function isActive() {
+    return document.documentElement.classList.contains(CLASS_NAME);
+  }
+
+  function applyState(enabled) {
+    if (enabled && isWatchPage()) {
+      document.documentElement.classList.add(CLASS_NAME);
+    } else {
+      document.documentElement.classList.remove(CLASS_NAME);
+    }
+  }
+
+  function toggle() {
+    const newState = !isActive();
+    applyState(newState);
+    chrome.storage.local.set({ [STORAGE_KEY]: newState });
+    return newState;
+  }
+
+  // Listen for messages from popup
+  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    if (message.action === "toggle") {
+      const state = toggle();
+      sendResponse({ active: state });
+    } else if (message.action === "getState") {
+      sendResponse({ active: isActive() });
+    }
+    return true;
+  });
+
+  // Keyboard shortcut: Alt+F
+  document.addEventListener("keydown", (e) => {
+    if (e.altKey && e.key === "f" && !e.ctrlKey && !e.shiftKey && !e.metaKey) {
+      // Don't trigger when typing in input fields
+      const tag = e.target.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) {
+        return;
+      }
+      e.preventDefault();
+      toggle();
+    }
+  });
+
+  // Handle YouTube SPA navigation
+  function onNavigate() {
+    chrome.storage.local.get(STORAGE_KEY, (result) => {
+      applyState(!!result[STORAGE_KEY]);
+    });
+  }
+
+  // YouTube fires this custom event on SPA navigation
+  window.addEventListener("yt-navigate-finish", onNavigate);
+
+  // Fallback: MutationObserver on <title> to catch navigation
+  const titleObserver = new MutationObserver(() => {
+    onNavigate();
+  });
+
+  const titleEl = document.querySelector("title");
+  if (titleEl) {
+    titleObserver.observe(titleEl, { childList: true });
+  }
+
+  // Initial load: restore saved state
+  onNavigate();
+})();

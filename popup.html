@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 280px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #181818;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 18px;
+      color: #fff;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #272727;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+
+    .toggle-label {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      cursor: pointer;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: #555;
+      border-radius: 12px;
+      transition: background 0.2s;
+    }
+
+    .slider::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      left: 3px;
+      top: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .toggle-switch input:checked + .slider {
+      background: #c00;
+    }
+
+    .toggle-switch input:checked + .slider::after {
+      transform: translateX(20px);
+    }
+
+    .hint {
+      font-size: 11px;
+      color: #888;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .hint span {
+      display: block;
+    }
+
+    .hint kbd {
+      background: #333;
+      border: 1px solid #444;
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-family: inherit;
+      font-size: 11px;
+      color: #ccc;
+    }
+
+    #status-msg {
+      display: none;
+      text-align: center;
+      font-size: 12px;
+      color: #f44;
+      background: #2a1a1a;
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>YouTube Windowed Fullscreen</h1>
+  <div id="status-msg"></div>
+  <div class="toggle-row">
+    <span class="toggle-label" id="state-label">OFF</span>
+    <label class="toggle-switch">
+      <input type="checkbox" id="toggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+  <div class="hint">
+    <span><kbd>Alt+F</kbd> to toggle</span>
+    <span>Only works on YouTube watch pages</span>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
