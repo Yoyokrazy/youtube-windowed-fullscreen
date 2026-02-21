@@ -100,7 +100,7 @@ function getActiveTab() {
 async function init() {
   const tab = await getActiveTab();
 
-  if (!tab?.url?.includes("youtube.com/watch")) {
+  if (!tab?.url || !(tab.url.includes("youtube.com/watch") || tab.url.includes("youtube.com/live/"))) {
     showError("Navigate to a YouTube video first");
     return;
   }

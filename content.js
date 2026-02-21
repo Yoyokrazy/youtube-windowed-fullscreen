@@ -7,7 +7,8 @@
   const STORAGE_KEY = "ywf-enabled";
 
   function isWatchPage() {
-    return window.location.pathname === "/watch";
+    const path = window.location.pathname;
+    return path === "/watch" || path.startsWith("/live/");
   }
 
   function isActive() {
