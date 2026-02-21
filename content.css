@@ -116,8 +116,9 @@ html.ywf-active #movie_player {
   background: #000 !important;
 }
 
-/* ===== Exit Button ===== */
+/* ===== Toggle Buttons (upper-right hover zone) ===== */
 
+#ywf-enter,
 #ywf-exit {
   display: none;
   position: fixed;
@@ -137,11 +138,15 @@ html.ywf-active #movie_player {
   pointer-events: none;
 }
 
+#ywf-enter:hover {
+  background: rgba(0, 100, 200, 0.9);
+}
+
 #ywf-exit:hover {
   background: rgba(204, 0, 0, 0.9);
 }
 
-#ywf-exit-zone {
+#ywf-toggle-zone {
   display: none;
   position: fixed;
   top: 0;
@@ -151,12 +156,32 @@ html.ywf-active #movie_player {
   z-index: 199999;
 }
 
-html.ywf-active #ywf-exit,
-html.ywf-active #ywf-exit-zone {
+/* Enter button: visible on watch pages when NOT active */
+#ywf-toggle-zone {
   display: block;
 }
 
-html.ywf-active #ywf-exit-zone:hover ~ #ywf-exit,
+#ywf-enter {
+  display: block;
+}
+
+html.ywf-active #ywf-enter {
+  display: none;
+}
+
+/* Exit button: visible when active */
+html.ywf-active #ywf-exit {
+  display: block;
+}
+
+/* Hover to reveal */
+#ywf-toggle-zone:hover ~ #ywf-enter,
+#ywf-enter:hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+html.ywf-active #ywf-toggle-zone:hover ~ #ywf-exit,
 html.ywf-active #ywf-exit:hover {
   opacity: 1;
   pointer-events: auto;

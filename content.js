@@ -14,26 +14,35 @@
     return document.documentElement.classList.contains(CLASS_NAME);
   }
 
-  function createExitElements() {
-    if (document.getElementById("ywf-exit-zone")) return;
+  function createToggleElements() {
+    if (document.getElementById("ywf-toggle-zone")) return;
     const zone = document.createElement("div");
-    zone.id = "ywf-exit-zone";
+    zone.id = "ywf-toggle-zone";
     document.body.appendChild(zone);
 
-    const btn = document.createElement("button");
-    btn.id = "ywf-exit";
-    btn.textContent = "Exit Windowed Fullscreen";
-    btn.addEventListener("click", () => {
+    const enterBtn = document.createElement("button");
+    enterBtn.id = "ywf-enter";
+    enterBtn.textContent = "Enter Windowed Fullscreen";
+    enterBtn.addEventListener("click", () => {
+      applyState(true);
+      chrome.storage.local.set({ [STORAGE_KEY]: true });
+    });
+    document.body.appendChild(enterBtn);
+
+    const exitBtn = document.createElement("button");
+    exitBtn.id = "ywf-exit";
+    exitBtn.textContent = "Exit Windowed Fullscreen";
+    exitBtn.addEventListener("click", () => {
       applyState(false);
       chrome.storage.local.set({ [STORAGE_KEY]: false });
     });
-    document.body.appendChild(btn);
+    document.body.appendChild(exitBtn);
   }
 
   function applyState(enabled) {
+    if (isWatchPage()) createToggleElements();
     if (enabled && isWatchPage()) {
       document.documentElement.classList.add(CLASS_NAME);
-      createExitElements();
     } else {
       document.documentElement.classList.remove(CLASS_NAME);
     }
