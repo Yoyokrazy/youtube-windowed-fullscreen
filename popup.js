@@ -81,3 +81,8 @@ toggle.addEventListener("change", async () => {
 });
 
 init();
+
+// Export for testing
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { isNewer, updateUI, showError, init };
+}

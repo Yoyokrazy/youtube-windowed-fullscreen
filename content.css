@@ -96,10 +96,9 @@ html.ywf-active body {
   overflow: hidden !important;
 }
 
-/* Ensure player controls remain visible and usable */
+/* Ensure player controls remain usable */
 html.ywf-active .ytp-chrome-bottom {
   z-index: 100000 !important;
-  opacity: 1 !important;
 }
 
 html.ywf-active .ytp-gradient-bottom {

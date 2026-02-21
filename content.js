@@ -29,6 +29,13 @@
     return newState;
   }
 
+  function shouldToggleOnKeydown(e) {
+    if (!(e.altKey && e.shiftKey && e.key === "F" && !e.ctrlKey && !e.metaKey)) return false;
+    const tag = e.target.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) return false;
+    return true;
+  }
+
   // Listen for messages from popup
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message.action === "toggle") {
@@ -42,12 +49,7 @@
 
   // Keyboard shortcut: Alt+Shift+F
   document.addEventListener("keydown", (e) => {
-    if (e.altKey && e.shiftKey && e.key === "F" && !e.ctrlKey && !e.metaKey) {
-      // Don't trigger when typing in input fields
-      const tag = e.target.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) {
-        return;
-      }
+    if (shouldToggleOnKeydown(e)) {
       e.preventDefault();
       toggle();
     }
@@ -75,4 +77,9 @@
 
   // Initial load: restore saved state
   onNavigate();
+
+  // Export for testing
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = { CLASS_NAME, STORAGE_KEY, isWatchPage, isActive, applyState, toggle, shouldToggleOnKeydown };
+  }
 })();

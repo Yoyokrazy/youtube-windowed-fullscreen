@@ -1,0 +1,17 @@
+{
+  "name": "youtube-windowed-fullscreen",
+  "version": "1.0.0",
+  "description": "A Chrome extension that makes the YouTube video player expand to fill your entire browser window without entering OS-level fullscreen mode.",
+  "main": "content.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0"
+  }
+}
