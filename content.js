@@ -15,6 +15,11 @@
     return document.documentElement.classList.contains(CLASS_NAME);
   }
 
+  // Guard against extension context being invalidated after reload
+  function safeStorageSet(data) {
+    try { chrome.storage.local.set(data); } catch {}
+  }
+
   function createToggleElements() {
     if (document.getElementById("ywf-toggle-zone")) return;
     const player = document.getElementById("movie_player");
@@ -29,7 +34,7 @@
     enterBtn.textContent = "Enter Windowed Fullscreen";
     enterBtn.addEventListener("click", () => {
       applyState(true);
-      chrome.storage.local.set({ [STORAGE_KEY]: true });
+      safeStorageSet({ [STORAGE_KEY]: true });
     });
     player.appendChild(enterBtn);
 
@@ -38,7 +43,7 @@
     exitBtn.textContent = "Exit Windowed Fullscreen";
     exitBtn.addEventListener("click", () => {
       applyState(false);
-      chrome.storage.local.set({ [STORAGE_KEY]: false });
+      safeStorageSet({ [STORAGE_KEY]: false });
     });
     player.appendChild(exitBtn);
   }
@@ -57,7 +62,7 @@
   function toggle() {
     const newState = !isActive();
     applyState(newState);
-    chrome.storage.local.set({ [STORAGE_KEY]: newState });
+    safeStorageSet({ [STORAGE_KEY]: newState });
     return newState;
   }
 
@@ -89,9 +94,11 @@
 
   // Handle YouTube SPA navigation
   function onNavigate() {
-    chrome.storage.local.get(STORAGE_KEY, (result) => {
-      applyState(!!result[STORAGE_KEY]);
-    });
+    try {
+      chrome.storage.local.get(STORAGE_KEY, (result) => {
+        applyState(!!result[STORAGE_KEY]);
+      });
+    } catch {}
   }
 
   window.addEventListener("yt-navigate-finish", onNavigate);
