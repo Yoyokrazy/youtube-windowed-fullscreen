@@ -10,7 +10,7 @@ Chrome Manifest V3 extension that makes the YouTube video player fill the entire
 
 **Popup ↔ Content script communication:** The popup sends `{action: "toggle"}` or `{action: "getState"}` via `chrome.tabs.sendMessage`. The content script responds with `{active: boolean}`. Keep this contract consistent across both files.
 
-**YouTube SPA handling:** YouTube doesn't do full page reloads between videos. The content script listens for the `yt-navigate-finish` custom event and has a `MutationObserver` fallback on `<title>` to reapply state. The mode only activates on `/watch` pages.
+**YouTube SPA handling:** YouTube doesn't do full page reloads between videos. The content script listens for the `yt-navigate-finish` custom event and has a `MutationObserver` fallback on `<title>` to reapply state. The mode only activates on `/watch` pages. The keyboard shortcut is `Alt+Shift+F` (not `Alt+F`, which opens Chrome's menu).
 
 ## Key Conventions
 

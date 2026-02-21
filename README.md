@@ -9,7 +9,7 @@ When you want to maximize video viewing space while keeping your browser windowe
 ## Features
 
 - **Toggle via extension icon** — Click the extension icon in your Chrome toolbar to expand/collapse the player
-- **Keyboard shortcut** — Press **Alt+F** to toggle windowed fullscreen anywhere on YouTube
+- **Keyboard shortcut** — Press **Alt+Shift+F** to toggle windowed fullscreen anywhere on YouTube
 - **Persists across navigation** — Your preference is remembered as you navigate between videos
 - **Dark-themed popup** — Clean, minimal UI that matches YouTube's aesthetic
 
@@ -47,9 +47,9 @@ After pulling new changes or editing files locally:
 - Click the extension icon in your toolbar to toggle windowed fullscreen on/off
 
 **Via Keyboard:**
-- Press **Alt+F** on any YouTube video page to toggle
+- Press **Alt+Shift+F** on any YouTube video page to toggle
 
-The video player will expand to fill the entire browser window. Exit by clicking the icon or pressing Alt+F again.
+The video player will expand to fill the entire browser window. Exit by clicking the icon or pressing Alt+Shift+F again.
 
 ## How It Works
 

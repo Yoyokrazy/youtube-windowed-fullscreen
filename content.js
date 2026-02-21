@@ -40,9 +40,9 @@
     return true;
   });
 
-  // Keyboard shortcut: Alt+F
+  // Keyboard shortcut: Alt+Shift+F
   document.addEventListener("keydown", (e) => {
-    if (e.altKey && e.key === "f" && !e.ctrlKey && !e.shiftKey && !e.metaKey) {
+    if (e.altKey && e.shiftKey && e.key === "F" && !e.ctrlKey && !e.metaKey) {
       // Don't trigger when typing in input fields
       const tag = e.target.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) {
