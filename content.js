@@ -85,6 +85,8 @@
     if (!isWatchPage()) return;
     const video = document.querySelector("video");
     const time = video ? Math.floor(video.currentTime) : 0;
+    // Pause the original video before opening app fullscreen
+    if (video && !video.paused) video.pause();
     const url = new URL(window.location.href);
     url.searchParams.set("t", time + "s");
     url.hash = "ywf-mega";
@@ -92,7 +94,10 @@
   }
 
   function exitMega() {
-    chrome.runtime.sendMessage({ action: "closeMega" });
+    // Capture current timestamp before closing so origin tab can resume
+    const video = document.querySelector("video");
+    const time = video ? Math.floor(video.currentTime) : 0;
+    chrome.runtime.sendMessage({ action: "closeMega", time: time });
   }
 
   function toggleMega() {
@@ -113,7 +118,7 @@
     }
   }
 
-  // Listen for messages from popup
+  // Listen for messages from popup or background
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message.action === "toggle") {
       const state = toggle();
@@ -123,6 +128,13 @@
       sendResponse({ mega: isMega() });
     } else if (message.action === "getState") {
       sendResponse({ active: isActive(), mega: isMega() });
+    } else if (message.action === "resumeAt") {
+      const video = document.querySelector("video");
+      if (video) {
+        video.currentTime = message.time;
+        video.play().catch(() => {});
+      }
+      sendResponse({ ok: true });
     }
     return true;
   });
