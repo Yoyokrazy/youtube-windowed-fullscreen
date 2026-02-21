@@ -17,6 +17,7 @@ Chrome Manifest V3 extension that makes the YouTube video player fill the entire
 - All CSS overrides use `!important` because YouTube applies inline styles and high-specificity selectors that must be defeated.
 - The content script runs as an IIFE to avoid polluting the global scope.
 - No build/transpile step — edit files directly and reload the extension in `chrome://extensions`.
+- Run `powershell -ExecutionPolicy Bypass -File build.ps1` to bump the patch version before reloading. Pass `minor` or `major` to bump those instead. The version shows in the popup.
 - The popup uses inline `<style>` in `popup.html` (no separate CSS file) to keep it self-contained.
 
 ## Testing

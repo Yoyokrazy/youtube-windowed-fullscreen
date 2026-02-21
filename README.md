@@ -35,11 +35,20 @@ Or download and extract the [latest zip from GitHub](https://github.com/Yoyokraz
 
 ### Updating
 
-After pulling new changes or editing files locally:
+After pulling new changes or editing files locally, bump the version and reload:
 
+```powershell
+powershell -ExecutionPolicy Bypass -File build.ps1        # patch bump (1.0.1 -> 1.0.2)
+powershell -ExecutionPolicy Bypass -File build.ps1 minor  # minor bump (1.0.2 -> 1.1.0)
+powershell -ExecutionPolicy Bypass -File build.ps1 major  # major bump (1.1.0 -> 2.0.0)
+```
+
+Then in Chrome:
 1. Go to `chrome://extensions`
 2. Click the **refresh icon** (↻) on the extension card
 3. Reload any open YouTube tabs
+
+The current version is shown at the bottom of the popup.
 
 ## Usage
 

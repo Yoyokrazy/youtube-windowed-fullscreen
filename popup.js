@@ -2,6 +2,8 @@ const toggle = document.getElementById("toggle");
 const stateLabel = document.getElementById("state-label");
 const statusMsg = document.getElementById("status-msg");
 
+document.getElementById("version").textContent = "v" + chrome.runtime.getManifest().version;
+
 function updateUI(enabled) {
   toggle.checked = enabled;
   stateLabel.textContent = enabled ? "ON" : "OFF";
