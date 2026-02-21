@@ -1,8 +1,27 @@
 const toggle = document.getElementById("toggle");
 const stateLabel = document.getElementById("state-label");
 const statusMsg = document.getElementById("status-msg");
+const updateBanner = document.getElementById("update-banner");
 
-document.getElementById("version").textContent = "v" + chrome.runtime.getManifest().version;
+const localVersion = chrome.runtime.getManifest().version;
+document.getElementById("version").textContent = "v" + localVersion;
+
+async function checkForUpdate() {
+  try {
+    const res = await fetch(
+      "https://raw.githubusercontent.com/Yoyokrazy/youtube-windowed-fullscreen/master/manifest.json",
+      { cache: "no-store" }
+    );
+    if (!res.ok) return;
+    const remote = await res.json();
+    if (remote.version !== localVersion) {
+      updateBanner.textContent = `Update available: v${remote.version}`;
+      updateBanner.style.display = "block";
+    }
+  } catch {}
+}
+
+checkForUpdate();
 
 function updateUI(enabled) {
   toggle.checked = enabled;
